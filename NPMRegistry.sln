@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7B65C19C-DEEA-4A56-8BD2-E3C8AF283A72}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+		omnisharp.json = omnisharp.json
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPMRegistry", "NPMRegistry\NPMRegistry.csproj", "{E0177336-C690-48CF-BA22-514D7CD572B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E0177336-C690-48CF-BA22-514D7CD572B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E0177336-C690-48CF-BA22-514D7CD572B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E0177336-C690-48CF-BA22-514D7CD572B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E0177336-C690-48CF-BA22-514D7CD572B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
