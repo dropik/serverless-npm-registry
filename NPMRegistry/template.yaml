@@ -3,7 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Serverless npm registry
 
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Timeout: 10
@@ -15,22 +14,42 @@ Resources:
     DeletionPolicy: Retain
     Properties:
       BucketName: npm-registry-bucket
-  NPMRegistryFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+      
+  RegistryAPIFunction:
+    Type: AWS::Serverless::Function
     Properties:
       Handler: NPMRegistry
       Runtime: dotnet8
       Architectures:
         - arm64
-      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+      Environment:
         Variables:
-          BUCKET: !Ref RegistryBucket
+          BUCKET: npm-registry-bucket
       Policies:
         - "AWSLambda_FullAccess"
         - "AmazonS3ReadOnlyAccess"
       Events:
         ProxyResource:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
           Properties:
             Path: /{proxy+}
             Method: ANY
+            
+  RegistryBucketHandlerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: NPMRegistry::NPMRegistry.VersionHandler::Handle
+      Runtime: dotnet8
+      Architectures:
+        - arm64
+      Policies:
+        - "AWSLambda_FullAccess"
+        - "AmazonS3FullAccess"
+      Events:
+        S3Event:
+          Type: S3
+          Properties:
+            Bucket: !Ref RegistryBucket
+            Events:
+              - s3:ObjectCreated:*
+              - s3:ObjectRemoved:*

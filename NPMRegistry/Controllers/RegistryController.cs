@@ -12,7 +12,7 @@ public class RegistryController : ControllerBase
     {
         return Ok(new RegistryResponse()
         {
-            db_name = "Serverless NPM Registry",
+            DBName = "Serverless NPM Registry",
         });
     }
 }
