@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.IO.Compression;
 using System.Net;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
@@ -169,7 +170,7 @@ public class VersionHandler
         return packageVersions;
     }
 
-    private async Task<Dictionary<string, PackageDesc>> LoadAlteredVersions(IAmazonS3 s3Client, string bucket,
+    private static async Task<Dictionary<string, PackageDesc>> LoadAlteredVersions(IAmazonS3 s3Client, string bucket,
         List<S3Event.S3EventNotificationRecord> records) =>
         (from item in await Task.WhenAll(from rec in records
                 let key = rec.S3.Object.Key
@@ -178,7 +179,7 @@ public class VersionHandler
             select new KeyValuePair<string, PackageDesc>(item.key, item.Result))
         .ToDictionary();
 
-    private async Task<PackageDesc?> LoadPackageVersionByKey(IAmazonS3 s3Client, string bucket, string key)
+    private static async Task<PackageDesc?> LoadPackageVersionByKey(IAmazonS3 s3Client, string bucket, string key)
     {
         try
         {
@@ -186,7 +187,6 @@ public class VersionHandler
             {
                 BucketName = bucket,
                 Key = key,
-                ChecksumMode = ChecksumMode.ENABLED,
             };
             var s3Response = await s3Client.GetObjectAsync(s3Request);
             if (s3Response.HttpStatusCode != HttpStatusCode.OK)
@@ -209,10 +209,12 @@ public class VersionHandler
                 return null;
             }
 
+            var hash = SHA1.HashData(ms.ToArray());
+
             packageData.Dist = new()
             {
                 Tarball = GetPublicTarballURL(bucket, key),
-                SHASum = Base64ToHex(s3Response.ChecksumSHA1),
+                SHASum = ToHex(hash),
             };
 
             packageData.LastModified = s3Response.LastModified;
@@ -319,11 +321,8 @@ public class VersionHandler
     private static string GetPublicTarballURL(string bucket, string key) =>
         $"https://{bucket}.s3.eu-central-1.amazonaws.com/{key}";
     
-    private static string Base64ToHex(string base64)
-    {
-        var bytes = Convert.FromBase64String(base64);
-        return BitConverter.ToString(bytes).Replace("-", "").ToLower();
-    }
+    private static string ToHex(byte[] bytes) =>
+        BitConverter.ToString(bytes).Replace("-", "").ToLower();
 
     private class PackageDesc : PackageVersion
     {
