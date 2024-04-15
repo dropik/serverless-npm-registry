@@ -83,3 +83,5 @@ public class PackagesController : ControllerBase
         public DateTime LastModified { get; init; }
     }
 }
+
+// search controller
