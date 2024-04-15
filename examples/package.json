@@ -1,0 +1,11 @@
+﻿{
+  "name": "com.unity-example-package",
+  "displayName": "Unity Example Package",
+  "description": "Example package to test serverless npm registry",
+  "version": "0.0.4",
+  "dependencies": {
+  },
+  "scripts": {
+    "publish": "npm pack && aws s3 cp . s3://npm-registry-bucket/com.unity-example-package/ --recursive --exclude \"*\" --include \"*.tgz\" && del \"./*.tgz\""
+  }
+}
